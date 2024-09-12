@@ -5,10 +5,8 @@ services:
     image: mysql:8.0 
     container_name: mysql_container
     environment:
-      MYSQL_ROOT_PASSWORD: gerenciales13  
-      MYSQL_DATABASE: practica13          
-      MYSQL_USER: root                    
-      MYSQL_PASSWORD: gerenciales13      
+      MYSQL_ROOT_PASSWORD: gerenciales13  # Contraseña para el usuario root
+      MYSQL_DATABASE: practica13          # Nombre de la base de datos a crear
     ports:
       - "3306:3306" 
     volumes:
