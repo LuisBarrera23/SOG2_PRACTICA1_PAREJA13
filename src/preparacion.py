@@ -5,14 +5,24 @@ import mysql.connector
 df = pd.read_csv('src/ventas_tienda_online.csv')
 
 # Verificar valores faltantes
-print("Valores faltantes:\n", df.isnull().sum())
+print("Valores faltantes antes de la limpieza:\n", df.isnull().sum())
 
 # Verificar duplicados
-print("Duplicados: ", df.duplicated().sum())
+print("Duplicados antes de la limpieza: ", df.duplicated().sum())
+
+# Eliminar duplicados
+df = df.drop_duplicates()
+
+# Eliminar filas con valores faltantes
+df = df.dropna()
+
+# Verificar nuevamente después de la limpieza
+print("Valores faltantes después de la limpieza:\n", df.isnull().sum())
+print("Duplicados después de la limpieza: ", df.duplicated().sum())
 
 # Conectar a la base de datos MySQL en GCP
 conexion = mysql.connector.connect(
-    host="34.133.24.88", 
+    host="34.172.242.238", 
     user="root",        
     password="gerenciales13",  
     database="practica13" 
@@ -28,8 +38,9 @@ INSERT INTO ventas (id_orden, fecha_compra, id_cliente, genero_cliente, edad_cli
 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 """
 
-for _, row in df.iterrows():
-    cursor.execute(sql, (
+# Convertir los datos en una lista de tuplas para la inserción por lotes
+data = [
+    (
         row['order_id'], 
         row['purchase_date'], 
         row['customer_id'], 
@@ -42,8 +53,12 @@ for _, row in df.iterrows():
         row['order_total'], 
         row['payment_method'], 
         row['shipping_region']
-    ))
+    ) 
+    for _, row in df.iterrows()
+]
 
+# Insertar todos los datos en un solo lote
+cursor.executemany(sql, data)
 
 # Confirmar los cambios en la base de datos
 conexion.commit()
