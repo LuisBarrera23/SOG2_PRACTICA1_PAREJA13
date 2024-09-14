@@ -20,6 +20,23 @@ df = df.dropna()
 print("Valores faltantes después de la limpieza:\n", df.isnull().sum())
 print("Duplicados después de la limpieza: ", df.duplicated().sum())
 
+# Asegurar que los tipos de datos son correctos
+df['order_id'] = df['order_id'].astype(int)
+df['purchase_date'] = pd.to_datetime(df['purchase_date'])
+df['customer_id'] = df['customer_id'].astype(int) 
+df['customer_gender'] = df['customer_gender'].astype(str) 
+df['customer_age'] = df['customer_age'].astype(int) 
+df['product_category'] = df['product_category'].astype(str) 
+df['product_name'] = df['product_name'].astype(str) 
+df['product_price'] = df['product_price'].astype(float)
+df['quantity'] = df['quantity'].astype(int)
+df['order_total'] = df['order_total'].astype(float)
+df['payment_method'] = df['payment_method'].astype(str) 
+df['shipping_region'] = df['shipping_region'].astype(str)
+
+# Verificar que los tipos de datos se han convertido correctamente
+print(df.dtypes)
+
 # Conectar a la base de datos MySQL en GCP
 conexion = mysql.connector.connect(
     host="34.172.242.238", 
@@ -29,6 +46,9 @@ conexion = mysql.connector.connect(
 )
 
 cursor = conexion.cursor()
+
+# Truncar la tabla antes de insertar los nuevos datos
+cursor.execute("TRUNCATE TABLE ventas")
 
 # Preparar la consulta SQL para insertar los datos en la tabla
 sql = """
